@@ -9,8 +9,10 @@ def index(request):
 
 # Command to turn off the monitor
 off_command = ["xset", "-display", ":0", "dpms", "force", "off"]
+off_commandXtra = ["vcgencmd","display_power","0"]
 # Comamnd to turn on the monitor
 on_command = ["xset", "-display", ":0", "dpms", "force", "on"]
+on_commandXtra = ["vcgencmd","display_power","1"]
 # This will print out all the info about the screen, which we can parse to see if the monitor is on
 status = ["xset", "-display", ":0", "q"]
 
@@ -30,9 +32,11 @@ def monitor(request):
     body = request.body
     do_action = json.loads(body)
     if do_action.get("on") and is_on() == False:
+      run = subprocess.run(on_commandXtra)
       run = subprocess.run(on_command)
       return JsonResponse({'success': "True", "exit_code" : run.returncode })
     elif do_action.get("off") and is_on():
+      run = subprocess.run(off_commandXtra)
       run = subprocess.run(off_command)
       return JsonResponse({'success': "True", "exit_code" : run.returncode })
     else:
